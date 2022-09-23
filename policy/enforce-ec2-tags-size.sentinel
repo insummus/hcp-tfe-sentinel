@@ -1,0 +1,36 @@
+
+import "tfplan/v2" as tfplan
+
+ec2_instances = filter tfplan.resource_changes as _, resource_changes {
+    resource_changes.type is "aws_instance" and
+        (resource_changes.change.actions contains "create" or
+            resource_changes.change.actions is ["update"])
+}
+
+mandatory_tags = [
+  "Name",
+]
+
+allowed_types = [
+  "t2.micro",
+  "t2.small",
+  "t2.medium",
+]
+
+mandatory_instance_tags = rule {
+  all ec2_instances as _, instance {
+    all mandatory_tags as mt {
+      instance.change.after.tags contains mt
+    }
+  }
+}
+
+instance_type_allowed = rule {
+  all ec2_instances as _, instance {
+    instance.change.after.instance_type in allowed_types
+  }
+}
+
+main = rule {
+  (instance_type_allowed and mandatory_instance_tags) else true
+}
