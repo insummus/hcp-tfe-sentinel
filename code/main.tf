@@ -1,18 +1,17 @@
 locals {
   tags = {
-    owner        = "gs@hashicorp.com"
+    owner        = "sungtae.yang@hashicorp.com"
     Region       = "ap-northeast-2"
-    Purpose      = "Destroy test with count"
+    Purpose      = "policy test"
     ttl          = 1
     Terraform    = true
     TFE          = true
-    TFEWorkspace = "great-stone/aws-gettingstarted"
-    Name = "GS"
+    Name         = "terraform-ent-gov-sec-policy"
   }
 }
 
 provider "aws" {
-  region  = "ap-northeast-2"
+  region = "ap-northeast-2"
 }
 
 resource "aws_security_group" "ssh" {
@@ -29,7 +28,7 @@ resource "aws_security_group" "ssh" {
 
 resource "aws_instance" "example" {
   count = 1
-  ami           = "ami-0cf5e0804bc49842e" # amzn2-ami-hvm-2.0.20200207.1-x86_64-gp2
+  ami   = "ami-0cf5e0804bc49842e" # amzn2-ami-hvm-2.0.20200207.1-x86_64-gp2
   # instance_type = "m5.xlarge"
   instance_type = "t2.large"
   vpc_security_group_ids = [
@@ -47,7 +46,7 @@ resource "aws_instance" "example" {
 }
 
 output "ami" {
-  value = aws_instance.example.*.ami
+  value     = aws_instance.example.*.ami
   sensitive = true
 }
 
